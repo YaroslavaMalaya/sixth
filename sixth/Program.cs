@@ -2,6 +2,13 @@
 var y = new BigInteger("17898456325");
 Console.WriteLine(x);
 Console.WriteLine(y.Add(x));
+Console.WriteLine(x.Sub(y));
+var z = new BigInteger("97898456325");
+var w = new BigInteger("3488989498");
+
+Console.WriteLine(z.Sub(w));
+
+
 
 public class BigInteger
 {
@@ -78,5 +85,41 @@ public class BigInteger
         return new BigInteger(stringResult);
     }
     
-    
+    public BigInteger Sub(BigInteger another) 
+    {
+        // return new BigInteger, result of current - another
+            
+        int[] firstNum = _numbers;
+        int[] secondNum = another._numbers;
+
+        int carry = 0;
+        if (firstNum.Length < secondNum.Length)
+        {
+            Array.Resize(ref firstNum, secondNum.Length);
+        }
+        
+        else if (secondNum.Length < firstNum.Length)
+        {
+            Array.Resize(ref secondNum, firstNum.Length);
+        }
+        
+        int[]result = new int[firstNum.Length];
+            
+        for (int i = 0; i < firstNum.Length; i++)
+        {
+            result[i] = firstNum[i] - secondNum[i] + carry;
+            carry = 0;
+            if (result[i] < 0)
+            {
+                result[i] += 10;
+                carry = -1;
+            }
+        }
+        Array.Reverse(result);
+        
+        var sub = String.Join("", result);
+        
+        return new BigInteger(sub);
+    }
+
 }
