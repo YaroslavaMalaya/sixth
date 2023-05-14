@@ -1,19 +1,24 @@
 ﻿var x = new BigInteger("1313234242425");
 var y = new BigInteger("17898456325");
-Console.WriteLine(x);
-Console.WriteLine(y.Add(x));
-Console.WriteLine(x.Sub(y));
-var z = new BigInteger("97898456325");
-var w = new BigInteger("3488989498");
+Console.WriteLine(x + y); // the same as Console.WriteLine(y.Add(x));
+if ((y - x).check)
+{
+    Console.WriteLine("-" + (y - x));
+}
+else
+{
+    Console.WriteLine(y - x);
 
-Console.WriteLine(z.Sub(w));
-
-
+}
+/* var z = new BigInteger("97898456325");
+//var w = new BigInteger("3488989498");
+Console.WriteLine(z.Sub(w)); */
 
 public class BigInteger
 {
     private int[] _numbers;
-
+    public bool check;
+    
     public BigInteger(string value)
     {
         // convert here string representation to inner int array IN REVERSED ORDER
@@ -21,7 +26,7 @@ public class BigInteger
 
         for (var i = value.Length - 1; i >= 0; i--)
         {
-            _numbers[value.Length - 1 - i] = int.Parse(value[i].ToString());
+             _numbers[value.Length - 1 - i] = int.Parse(value[i].ToString());
         }
     }
     
@@ -42,7 +47,7 @@ public class BigInteger
     {
         // return new BigInteger, result of current + another
         
-        int carry = 0;
+        var carry = 0;
         int[] firstNum = _numbers;
         int[] secondNum = another._numbers;
 
@@ -50,7 +55,6 @@ public class BigInteger
         {
             Array.Resize(ref firstNum, secondNum.Length);
         }
-        
         else if (secondNum.Length < firstNum.Length)
         {
             Array.Resize(ref secondNum, firstNum.Length);
@@ -88,38 +92,61 @@ public class BigInteger
     public BigInteger Sub(BigInteger another) 
     {
         // return new BigInteger, result of current - another
-            
+        
         int[] firstNum = _numbers;
         int[] secondNum = another._numbers;
-
-        int carry = 0;
+        var carry = 0;
+        
         if (firstNum.Length < secondNum.Length)
         {
             Array.Resize(ref firstNum, secondNum.Length);
+            check = true;
+            (firstNum, secondNum) = (secondNum, firstNum);
         }
-        
         else if (secondNum.Length < firstNum.Length)
         {
             Array.Resize(ref secondNum, firstNum.Length);
+        }
+        else if (firstNum.Length == secondNum.Length)
+        {
+            for (var i = firstNum.Length-1; i >= 0 ; i--) // check each digit of each number
+            {
+                if (firstNum[i] < secondNum[i])
+                {
+                    check = true;
+                    (firstNum, secondNum) = (secondNum, firstNum);
+                    break;
+                }
+                if (firstNum[i] > secondNum[i])
+                {
+                    break;
+                }
+            }
         }
         
         int[]result = new int[firstNum.Length];
             
         for (int i = 0; i < firstNum.Length; i++)
         {
-            result[i] = firstNum[i] - secondNum[i] + carry;
+            result[i] = firstNum[i] - secondNum[i] - carry;
             carry = 0;
             if (result[i] < 0)
             {
                 result[i] += 10;
-                carry = -1;
+                carry = 1;
             }
         }
         Array.Reverse(result);
-        
-        var sub = String.Join("", result);
-        
-        return new BigInteger(sub);
-    }
 
+        var sub = String.Join("", result);
+        var resultBigInteger = new BigInteger(sub);
+        if (check)
+        {
+            resultBigInteger.check = true;
+        }
+        return resultBigInteger;
+    }
+    
+    public static BigInteger operator +(BigInteger a, BigInteger b) => a.Add(b);
+    public static BigInteger operator -(BigInteger a, BigInteger b) => a.Sub(b);
 }

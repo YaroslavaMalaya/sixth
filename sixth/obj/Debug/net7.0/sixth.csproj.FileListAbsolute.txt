@@ -9,18 +9,18 @@
 /Users/Yarrochka/Мої файли/Study/IT 3/sixth/sixth/obj/Debug/net7.0/sixth.dll
 /Users/Yarrochka/Мої файли/Study/IT 3/sixth/sixth/obj/Debug/net7.0/refint/sixth.dll
 /Users/Yarrochka/Мої файли/Study/IT 3/sixth/sixth/obj/Debug/net7.0/sixth.pdb
-C:\Users\sofma\sixth\sixth\bin\Debug\net7.0\sixth.exe
-C:\Users\sofma\sixth\sixth\bin\Debug\net7.0\sixth.deps.json
-C:\Users\sofma\sixth\sixth\bin\Debug\net7.0\sixth.runtimeconfig.json
-C:\Users\sofma\sixth\sixth\bin\Debug\net7.0\sixth.dll
-C:\Users\sofma\sixth\sixth\bin\Debug\net7.0\sixth.pdb
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.csproj.AssemblyReference.cache
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.AssemblyInfoInputs.cache
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.AssemblyInfo.cs
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.csproj.CoreCompileInputs.cache
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.dll
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\refint\sixth.dll
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.pdb
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\sixth.genruntimeconfig.cache
-C:\Users\sofma\sixth\sixth\obj\Debug\net7.0\ref\sixth.dll
+C:/Users/sofma/sixth/sixth/bin/Debug/net7.0/sixth.exe
+C:/Users/sofma/sixth/sixth/bin/Debug/net7.0/sixth.deps.json
+C:/Users/sofma/sixth/sixth/bin/Debug/net7.0/sixth.runtimeconfig.json
+C:/Users/sofma/sixth/sixth/bin/Debug/net7.0/sixth.dll
+C:/Users/sofma/sixth/sixth/bin/Debug/net7.0/sixth.pdb
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.csproj.AssemblyReference.cache
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.AssemblyInfoInputs.cache
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.AssemblyInfo.cs
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.csproj.CoreCompileInputs.cache
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.dll
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/refint/sixth.dll
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.pdb
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/sixth.genruntimeconfig.cache
+C:/Users/sofma/sixth/sixth/obj/Debug/net7.0/ref/sixth.dll
