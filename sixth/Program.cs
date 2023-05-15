@@ -1,7 +1,7 @@
 ﻿// var x = new BigInteger("1313234242425");
 // var y = new BigInteger("17898456325");
-var x = new BigInteger("678");
-var y = new BigInteger("567");
+var x = new BigInteger("-25");
+var y = new BigInteger("4");
 Console.WriteLine(x + y); // the same as Console.WriteLine(y.Add(x));
 if ((y - x).check)
 {
@@ -162,24 +162,24 @@ public class BigInteger
             var first = int.Parse(String.Join("", firstNum));
             Array.Reverse(secondNum);
             var number = new BigInteger(String.Join("", secondNum));
-            while (first > 0)
+            BigInteger res = new BigInteger("0");
+            for (int i = first; i > 0; i--)
             {
-                number += number;
-                first--;
-            } 
-            return number;
+                res += number;
+            }
+            return res;
         }
         if (secondNum.Length == 1)
         {
             var first = int.Parse(String.Join("", secondNum));
             Array.Reverse(firstNum);
             BigInteger number1 = new BigInteger(String.Join("", firstNum));
-            while (first > 0)
+            BigInteger res1 = new BigInteger("0");
+            for (int i = first; i > 0; i--)
             {
-                number1 += number1;
-                first--;
-            } 
-            return number1;
+                res1 += number1;
+            }
+            return res1;
         }
             
         // це треба для того, щоб якщо це число і є найменшим по довжині, то ми могли взяти його 1 елемент спокійно (далі буде більш зрозуміло)
@@ -205,7 +205,7 @@ public class BigInteger
         Array.Copy(secondNum, 0, y2, 0, power - carryY);
         
         Array.Reverse(x1);
-        var x11 = new BigInteger(String.Join("", x1));
+        var x11 = new BigInteger(String.Join("", x1)); 
         Array.Reverse(x2);
         var x22 = new BigInteger(String.Join("", x2));
         Array.Reverse(y1);
