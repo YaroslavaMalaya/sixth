@@ -17,8 +17,8 @@ while (true)
 // var x = new BigInteger("1313234242425");
 // var y = new BigInteger("17898456325");
 
-var x = new BigInteger("253333");
-var y = new BigInteger("4673");
+var x = new BigInteger("25");
+var y = new BigInteger("4631");
 Console.WriteLine(x + y); // the same as Console.WriteLine(y.Add(x));
 Console.WriteLine(y - x);
 Console.WriteLine(x - y);
@@ -27,7 +27,7 @@ Console.WriteLine(x * y);
 public class BigInteger
 {
     private int[] _numbers;
-    private bool _negative = false;
+    public bool IsNegative { get; private set; }
 
     public BigInteger(string value)
     {
@@ -36,7 +36,12 @@ public class BigInteger
 
         for (var i = value.Length - 1; i >= 0; i--)
         {
-             _numbers[value.Length - 1 - i] = int.Parse(value[i].ToString());
+            if (value[i] == '-')
+            {
+                IsNegative = true;
+                continue;
+            }
+            _numbers[value.Length - 1 - i] = int.Parse(value[i].ToString());
         }
     }
     
@@ -49,7 +54,7 @@ public class BigInteger
             str.Add(Convert.ToString(_numbers[i]));
         }
         var numb = string.Join("", str);
-        if (_negative)
+        if (IsNegative)
         {
             numb = "-" + numb;
         }
@@ -59,6 +64,36 @@ public class BigInteger
     public BigInteger Add(BigInteger another)
     {
         // return new BigInteger, result of current + another
+        
+        if (IsNegative && !another.IsNegative)
+        {
+            // If the current number is negative and the other number is positive,
+            // perform subtraction instead of addition
+            BigInteger negativeThis = new BigInteger(ToString());
+            negativeThis.IsNegative = false;
+            return another.Sub(negativeThis);
+        }
+
+        else if (!IsNegative && another.IsNegative)
+        {
+            // If the current number is positive and the other number is negative,
+            // perform subtraction instead of addition
+            BigInteger negativeAnother = new BigInteger(another.ToString());
+            negativeAnother.IsNegative = false;
+            return Sub(negativeAnother);
+        }
+
+        else if (IsNegative && another.IsNegative)
+        {
+            // If both numbers are negative, perform addition and the result will be negative
+            BigInteger negativeThis = new BigInteger(ToString());
+            negativeThis.IsNegative = false;
+            BigInteger negativeAnother = new BigInteger(another.ToString());
+            negativeAnother.IsNegative = false;
+            BigInteger sumAdd = negativeThis.Add(negativeAnother);
+            sumAdd.IsNegative = true;
+            return sumAdd;
+        }
         
         var carry = 0;
         int[] firstNum = _numbers;
@@ -102,7 +137,10 @@ public class BigInteger
             Array.Reverse(result);
         }
         var stringResult = String.Join("", result);
-        return new BigInteger(stringResult);
+        BigInteger sum = new BigInteger(stringResult);
+        sum.IsNegative = IsNegative;
+
+        return sum;
     }
     
     public BigInteger Sub(BigInteger another) 
@@ -113,10 +151,40 @@ public class BigInteger
         int[] secondNum = another._numbers;
         var carry = 0;
         
+        if (!IsNegative && another.IsNegative)
+        {
+            // If the current number is positive and the other number is negative,
+            // perform addition instead of subtraction
+            BigInteger negativeAnother = new BigInteger(another.ToString());
+            negativeAnother.IsNegative = false;
+            BigInteger sum = Add(another);
+            sum.IsNegative = true;
+            return sum;
+        }
+        else if (IsNegative && !another.IsNegative)
+        {
+            // If the current number is negative and the other number is positive,
+            // perform addition instead of subtraction
+            BigInteger negativeThis = new BigInteger(ToString());
+            negativeThis.IsNegative = false;
+            BigInteger sum = negativeThis.Add(another);
+            sum.IsNegative = true;
+            return sum;
+        }
+        else if (IsNegative && another.IsNegative)
+        {
+            // If both numbers are negative, perform subtraction as positive numbers
+            BigInteger negativeThis = new BigInteger(ToString());
+            negativeThis.IsNegative = false;
+            BigInteger negativeAnother = new BigInteger(another.ToString());
+            negativeAnother.IsNegative = false;
+            return negativeAnother.Sub(negativeThis);
+        }
+        
         if (firstNum.Length < secondNum.Length)
         {
             Array.Resize(ref firstNum, secondNum.Length);
-            _negative = true;
+            IsNegative = true;
             (firstNum, secondNum) = (secondNum, firstNum);
         }
         else if (secondNum.Length < firstNum.Length)
@@ -129,7 +197,7 @@ public class BigInteger
             {
                 if (firstNum[i] < secondNum[i])
                 {
-                    _negative = true;
+                    IsNegative = true;
                     (firstNum, secondNum) = (secondNum, firstNum);
                     break;
                 }
@@ -154,11 +222,18 @@ public class BigInteger
         }
         Array.Reverse(result);
 
+        // Remove leading zeros
+        int startIndex = 0;
+        while (startIndex < result.Length - 1 && result[startIndex] == 0)
+        {
+            startIndex++;
+        }
+        
         var sub = String.Join("", result);
         var resultBigInteger = new BigInteger(sub);
-        if (_negative)
+        if (IsNegative)
         {
-            resultBigInteger._negative = true;
+            resultBigInteger.IsNegative = true;
         }
         return resultBigInteger;
     }
@@ -169,7 +244,7 @@ public class BigInteger
         // return new BigInteger, result of current * another
         int[] firstNum = _numbers; 
         int[] secondNum = another._numbers;
-        var power = Math.Min(firstNum.Length, secondNum.Length) - 1 ; 
+        var power = Math.Max(firstNum.Length, secondNum.Length) - 1; 
         int bm = (int)Math.Pow(10, power);
 
         // це множення багатозначного числа на однозначне (а це є декілька разів додати)
@@ -270,4 +345,78 @@ public class BigInteger
     public static BigInteger operator +(BigInteger a, BigInteger b) => a.Add(b);
     public static BigInteger operator -(BigInteger a, BigInteger b) => a.Sub(b);
     public static BigInteger operator *(BigInteger a, BigInteger b) => a.MultKaratsuba(b);
+    
+    public BigInteger KaratsubaVer2(BigInteger another)
+    {
+        int[] firstNum = _numbers; 
+        int[] secondNum = another._numbers;
+        var result = new BigInteger("0");
+        
+
+        if (firstNum.Length == 1 || secondNum.Length == 1)
+        {
+            var res = firstNum[0] * secondNum[0];
+            var num = new BigInteger(res.ToString());
+            result += num;
+            Console.WriteLine(result);
+            return result;
+        }
+        else
+        {
+            var size = Math.Max(firstNum.Length, secondNum.Length);
+            var m = size / 2;
+            int bm = (int)Math.Pow(10, m);
+        
+            /* Split the digit sequences in the middle. */
+            var x1 = firstNum.Take(m).ToArray();
+            var y1 = firstNum.Skip(m).
+                Take(firstNum.Length - m).ToArray();
+        
+            var x2 = secondNum.Take(m).ToArray();
+            var y2 = secondNum.Skip(m).
+                Take(secondNum.Length - m).ToArray();
+        
+            Array.Reverse(x1);
+            var x11 = new BigInteger(String.Join("", x1)); 
+            Array.Reverse(y1);
+            var y11 = new BigInteger(String.Join("", y1)); 
+            Array.Reverse(x2);
+            var x12 = new BigInteger(String.Join("", x2));
+            Array.Reverse(y2);
+            var y12 = new BigInteger(String.Join("", y2)); 
+        
+
+            var z0 = y11.KaratsubaVer2(y12);
+            var z1 = (x11 + y11).KaratsubaVer2(x12 + y12);
+            var z2 = x11.KaratsubaVer2(x12);
+
+            var ten = new BigInteger("10");
+        
+            /*
+            int number = z2 * ten ^ (size * 2) + ((z1 - z2 - z0) * ten ^ m) + z0;
+            var numb = new BigInteger(number.ToString());
+            result += numb;*/
+        
+            var z22 = z2.ToString();
+            foreach (char el in Math.Pow(size, 2).ToString())
+            {
+                if (el != '1')
+                {
+                    z22 += "0";
+                }
+            }
+            var z11 = z1.ToString();
+            foreach (char el in bm.ToString())
+            {
+                if (el != '1')
+                {
+                    z11 += "0";
+                }
+            }
+        
+            result = new BigInteger(z22) + new BigInteger(z11) + z0;
+        
+            return result;
+        }
+    }
 }
