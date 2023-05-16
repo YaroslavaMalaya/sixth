@@ -18,7 +18,7 @@ while (true)
 // var y = new BigInteger("17898456325");
 
 var x = new BigInteger("25");
-var y = new BigInteger("4631");
+var y = new BigInteger("-4631");
 Console.WriteLine(x + y); // the same as Console.WriteLine(y.Add(x));
 Console.WriteLine(y - x);
 Console.WriteLine(x - y);
@@ -61,6 +61,21 @@ public class BigInteger
         return numb;
     }
     
+    public string ToStringNegative()
+    {
+        // convert array back to string and return it
+        var str = new List<string>();
+        for (var i = _numbers.Length - 2; i >= 0; i--)
+        {
+            str.Add(Convert.ToString(_numbers[i]));
+        }
+
+        var numb = string.Join("", str);
+        // Console.WriteLine(numb);
+
+        return numb;
+    }
+    
     public BigInteger Add(BigInteger another)
     {
         // return new BigInteger, result of current + another
@@ -69,7 +84,7 @@ public class BigInteger
         {
             // If the current number is negative and the other number is positive,
             // perform subtraction instead of addition
-            BigInteger negativeThis = new BigInteger(ToString());
+            BigInteger negativeThis = new BigInteger(ToStringNegative());
             negativeThis.IsNegative = false;
             return another.Sub(negativeThis);
         }
@@ -78,7 +93,7 @@ public class BigInteger
         {
             // If the current number is positive and the other number is negative,
             // perform subtraction instead of addition
-            BigInteger negativeAnother = new BigInteger(another.ToString());
+            BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
             negativeAnother.IsNegative = false;
             return Sub(negativeAnother);
         }
@@ -86,9 +101,9 @@ public class BigInteger
         else if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform addition and the result will be negative
-            BigInteger negativeThis = new BigInteger(ToString());
+            BigInteger negativeThis = new BigInteger(ToStringNegative());
             negativeThis.IsNegative = false;
-            BigInteger negativeAnother = new BigInteger(another.ToString());
+            BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
             negativeAnother.IsNegative = false;
             BigInteger sumAdd = negativeThis.Add(negativeAnother);
             sumAdd.IsNegative = true;
@@ -155,7 +170,7 @@ public class BigInteger
         {
             // If the current number is positive and the other number is negative,
             // perform addition instead of subtraction
-            BigInteger negativeAnother = new BigInteger(another.ToString());
+            BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
             negativeAnother.IsNegative = false;
             BigInteger sum = Add(another);
             sum.IsNegative = true;
@@ -165,7 +180,7 @@ public class BigInteger
         {
             // If the current number is negative and the other number is positive,
             // perform addition instead of subtraction
-            BigInteger negativeThis = new BigInteger(ToString());
+            BigInteger negativeThis = new BigInteger(ToStringNegative());
             negativeThis.IsNegative = false;
             BigInteger sum = negativeThis.Add(another);
             sum.IsNegative = true;
@@ -174,9 +189,9 @@ public class BigInteger
         else if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform subtraction as positive numbers
-            BigInteger negativeThis = new BigInteger(ToString());
+            BigInteger negativeThis = new BigInteger(ToStringNegative());
             negativeThis.IsNegative = false;
-            BigInteger negativeAnother = new BigInteger(another.ToString());
+            BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
             negativeAnother.IsNegative = false;
             return negativeAnother.Sub(negativeThis);
         }
