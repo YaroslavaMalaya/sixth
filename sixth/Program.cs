@@ -17,12 +17,12 @@ while (true)
 // var x = new BigInteger("1313234242425");
 // var y = new BigInteger("17898456325");
 
-var x = new BigInteger("25");
-var y = new BigInteger("-4631");
+var x = new BigInteger("-1033");
+var y = new BigInteger("234");
 Console.WriteLine(x + y); // the same as Console.WriteLine(y.Add(x));
 Console.WriteLine(y - x);
 Console.WriteLine(x - y);
-Console.WriteLine(x * y);
+//Console.WriteLine(x * y);
 
 public class BigInteger
 {
@@ -79,7 +79,7 @@ public class BigInteger
     public BigInteger Add(BigInteger another)
     {
         // return new BigInteger, result of current + another
-        
+
         if (IsNegative && !another.IsNegative)
         {
             // If the current number is negative and the other number is positive,
@@ -89,7 +89,7 @@ public class BigInteger
             return another.Sub(negativeThis);
         }
 
-        else if (!IsNegative && another.IsNegative)
+        if (!IsNegative && another.IsNegative)
         {
             // If the current number is positive and the other number is negative,
             // perform subtraction instead of addition
@@ -98,7 +98,7 @@ public class BigInteger
             return Sub(negativeAnother);
         }
 
-        else if (IsNegative && another.IsNegative)
+        if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform addition and the result will be negative
             BigInteger negativeThis = new BigInteger(ToStringNegative());
@@ -109,7 +109,7 @@ public class BigInteger
             sumAdd.IsNegative = true;
             return sumAdd;
         }
-        
+
         var carry = 0;
         int[] firstNum = _numbers;
         int[] secondNum = another._numbers;
@@ -122,21 +122,18 @@ public class BigInteger
         {
             Array.Resize(ref secondNum, firstNum.Length);
         }
-        
-        int[]result = new int[firstNum.Length + 1];
-        
+
+        int[] result = new int[firstNum.Length + 1];
+
         for (int i = 0; i < firstNum.Length; i++)
         {
             result[i] = firstNum[i] + secondNum[i] + carry;
-            carry = 0;
-            if (result[i] >= 10)
-            {
-                result[i] -= 10;
-                carry = 1;
-            }
+            carry = result[i] / 10;
+            result[i] %= 10;
         }
+
         result[^1] = carry;
-        
+
         if (result[^1] == 0)
         {
             int newLength = result.Length - 1;
@@ -151,6 +148,7 @@ public class BigInteger
         {
             Array.Reverse(result);
         }
+
         var stringResult = String.Join("", result);
         BigInteger sum = new BigInteger(stringResult);
         sum.IsNegative = IsNegative;
@@ -158,14 +156,14 @@ public class BigInteger
         return sum;
     }
     
-    public BigInteger Sub(BigInteger another) 
+    public BigInteger Sub(BigInteger another)
     {
         // return new BigInteger, result of current - another
-        
+
         int[] firstNum = _numbers;
         int[] secondNum = another._numbers;
         var carry = 0;
-        
+
         if (!IsNegative && another.IsNegative)
         {
             // If the current number is positive and the other number is negative,
@@ -176,7 +174,7 @@ public class BigInteger
             sum.IsNegative = true;
             return sum;
         }
-        else if (IsNegative && !another.IsNegative)
+        if (IsNegative && !another.IsNegative)
         {
             // If the current number is negative and the other number is positive,
             // perform addition instead of subtraction
@@ -186,7 +184,7 @@ public class BigInteger
             sum.IsNegative = true;
             return sum;
         }
-        else if (IsNegative && another.IsNegative)
+        if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform subtraction as positive numbers
             BigInteger negativeThis = new BigInteger(ToStringNegative());
@@ -195,7 +193,7 @@ public class BigInteger
             negativeAnother.IsNegative = false;
             return negativeAnother.Sub(negativeThis);
         }
-        
+
         if (firstNum.Length < secondNum.Length)
         {
             Array.Resize(ref firstNum, secondNum.Length);
@@ -208,7 +206,7 @@ public class BigInteger
         }
         else if (firstNum.Length == secondNum.Length)
         {
-            for (var i = firstNum.Length-1; i >= 0 ; i--) // check each digit of each number
+            for (var i = firstNum.Length - 1; i >= 0; i--) // check each digit of each number
             {
                 if (firstNum[i] < secondNum[i])
                 {
@@ -216,15 +214,16 @@ public class BigInteger
                     (firstNum, secondNum) = (secondNum, firstNum);
                     break;
                 }
+
                 if (firstNum[i] > secondNum[i])
                 {
                     break;
                 }
             }
         }
-        
-        int[]result = new int[firstNum.Length];
-            
+
+        int[] result = new int[firstNum.Length];
+
         for (int i = 0; i < firstNum.Length; i++)
         {
             result[i] = firstNum[i] - secondNum[i] - carry;
@@ -235,6 +234,7 @@ public class BigInteger
                 carry = 1;
             }
         }
+
         Array.Reverse(result);
 
         // Remove leading zeros
@@ -243,13 +243,14 @@ public class BigInteger
         {
             startIndex++;
         }
-        
-        var sub = String.Join("", result);
+
+        var sub = String.Join("", result[startIndex..]);
         var resultBigInteger = new BigInteger(sub);
         if (IsNegative)
         {
             resultBigInteger.IsNegative = true;
         }
+
         return resultBigInteger;
     }
     
