@@ -344,79 +344,63 @@ public class BigInteger
 
     public static BigInteger operator +(BigInteger a, BigInteger b) => a.Add(b);
     public static BigInteger operator -(BigInteger a, BigInteger b) => a.Sub(b);
-    public static BigInteger operator *(BigInteger a, BigInteger b) => a.MultKaratsuba(b);
+    public static BigInteger operator *(BigInteger a, BigInteger b) => a.KaratsubaMultiply(b);
     
-    private BigInteger KaratsubaVer2(BigInteger another)
+    public BigInteger KaratsubaMultiply(BigInteger another)
     {
-        int[] firstNum = _numbers; 
-        int[] secondNum = another._numbers;
-        var result = new BigInteger("0");
-        
-
-        if (firstNum.Length == 1 || secondNum.Length == 1)
+        // Handle multiplication by 0
+        if (ToString() == "0" || another.ToString() == "0")
         {
-            var res = firstNum[0] * secondNum[0];
-            var num = new BigInteger(res.ToString());
-            result += num;
-            Console.WriteLine(result);
-            return result;
+            return new BigInteger("0");
         }
-        else
+
+        // Calculate the number of digits in the operands
+        int n = Math.Max(_numbers.Length, another._numbers.Length);
+
+        // Base case: if the number of digits is less than a threshold, use regular multiplication
+        // i.e  a specific condition where the number of digits in the operands is relatively small.
+        if (n < 10)
         {
-            var size = Math.Max(firstNum.Length, secondNum.Length);
-            var m = size / 2;
-            int bm = (int)Math.Pow(10, m);
-        
-            /* Split the digit sequences in the middle. */
-            var x1 = firstNum.Take(m).ToArray();
-            var y1 = firstNum.Skip(m).
-                Take(firstNum.Length - m).ToArray();
-        
-            var x2 = secondNum.Take(m).ToArray();
-            var y2 = secondNum.Skip(m).
-                Take(secondNum.Length - m).ToArray();
-        
-            Array.Reverse(x1);
-            var x11 = new BigInteger(String.Join("", x1)); 
-            Array.Reverse(y1);
-            var y11 = new BigInteger(String.Join("", y1)); 
-            Array.Reverse(x2);
-            var x12 = new BigInteger(String.Join("", x2));
-            Array.Reverse(y2);
-            var y12 = new BigInteger(String.Join("", y2)); 
-        
-
-            var z0 = y11.KaratsubaVer2(y12);
-            var z1 = (x11 + y11).KaratsubaVer2(x12 + y12);
-            var z2 = x11.KaratsubaVer2(x12);
-
-            var ten = new BigInteger("10");
-        
-            /*
-            int number = z2 * ten ^ (size * 2) + ((z1 - z2 - z0) * ten ^ m) + z0;
-            var numb = new BigInteger(number.ToString());
-            result += numb;*/
-        
-            var z22 = z2.ToString();
-            foreach (char el in Math.Pow(size, 2).ToString())
-            {
-                if (el != '1')
-                {
-                    z22 += "0";
-                }
-            }
-            var z11 = z1.ToString();
-            foreach (char el in bm.ToString())
-            {
-                if (el != '1')
-                {
-                    z11 += "0";
-                }
-            }
-        
-            result = new BigInteger(z22) + new BigInteger(z11) + z0;
-        
-            return result;
+            long res = long.Parse(ToString()) * long.Parse(another.ToString());
+            return new BigInteger(res.ToString());
         }
+
+        // Split the numbers into high and low parts
+        int m = (n + 1) / 2;
+
+        BigInteger high1 = new BigInteger(ToString().Substring(0, Math.Max(0, ToString().Length - m)));
+        BigInteger low1 = new BigInteger(ToString().Substring(Math.Max(0, ToString().Length - m)));
+        BigInteger high2 = new BigInteger(another.ToString().Substring(0, Math.Max(0, another.ToString().Length - m)));
+        BigInteger low2 = new BigInteger(another.ToString().Substring(Math.Max(0, another.ToString().Length - m)));
+
+        // Recursive steps
+        BigInteger z0 = low1.KaratsubaMultiply(low2);
+        BigInteger z1 = (low1.Add(high1)).KaratsubaMultiply(low2.Add(high2));
+        BigInteger z2 = high1.KaratsubaMultiply(high2);
+
+        // Calculate the cross term
+        BigInteger crossTerm = z1.Sub(z2).Sub(z0);
+
+        // Calculate the result
+        BigInteger result = z2.MultiplyPowerOf10(2 * m).Add(crossTerm.MultiplyPowerOf10(m)).Add(z0);
+
+        return result;
+    }
+
+    private BigInteger MultiplyPowerOf10(int power)
+    {
+        if (ToString() == "0")
+        {
+            return this;
+        }
+
+        string result = ToString();
+
+        for (int i = 0; i < power; i++)
+        {
+            result += "0";
+        }
+
+        return new BigInteger(result);
     }
 }
