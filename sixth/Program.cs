@@ -1,28 +1,25 @@
-﻿/*
-while (true)
+﻿while (true)
 {
     Console.WriteLine("Enter your example (with space):");
     var example = Console.ReadLine().Split(" ");
-    var firstN = example[0];
+    var firstN = new BigInteger(example[0]);
     var oper = example[1];
-    var secondN = example[2];
+    var secondN = new BigInteger(example[2]);
 
-    if (firstN.Contains('-') || secondN.Contains('-'))
+    Console.WriteLine("The answer is:");
+    switch (oper)
     {
-        
+        case "+":
+            Console.WriteLine($"{firstN + secondN}\n");
+            break;
+        case "-":
+            Console.WriteLine($"{firstN - secondN}\n");
+            break;
+        case "*":
+            Console.WriteLine($"{firstN * secondN}\n");
+            break;
     }
-
 }
-*/
-// var x = new BigInteger("1313234242425");
-// var y = new BigInteger("17898456325");
-
-var x = new BigInteger("-1033");
-var y = new BigInteger("234");
-Console.WriteLine(x + y); // the same as Console.WriteLine(y.Add(x));
-Console.WriteLine(y - x);
-Console.WriteLine(x - y);
-//Console.WriteLine(x * y);
 
 public class BigInteger
 {
@@ -33,7 +30,6 @@ public class BigInteger
     {
         // convert here string representation to inner int array IN REVERSED ORDER
         _numbers = new int[value.Length];
-
         for (var i = value.Length - 1; i >= 0; i--)
         {
             if (value[i] == '-')
@@ -69,42 +65,33 @@ public class BigInteger
         {
             str.Add(Convert.ToString(_numbers[i]));
         }
-
         var numb = string.Join("", str);
         // Console.WriteLine(numb);
-
         return numb;
     }
     
-    public BigInteger Add(BigInteger another)
+    private BigInteger Add(BigInteger another)
     {
         // return new BigInteger, result of current + another
-
         if (IsNegative && !another.IsNegative)
         {
             // If the current number is negative and the other number is positive,
             // perform subtraction instead of addition
             BigInteger negativeThis = new BigInteger(ToStringNegative());
-            negativeThis.IsNegative = false;
             return another.Sub(negativeThis);
         }
-
         if (!IsNegative && another.IsNegative)
         {
             // If the current number is positive and the other number is negative,
             // perform subtraction instead of addition
             BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
-            negativeAnother.IsNegative = false;
             return Sub(negativeAnother);
         }
-
         if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform addition and the result will be negative
             BigInteger negativeThis = new BigInteger(ToStringNegative());
-            negativeThis.IsNegative = false;
             BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
-            negativeAnother.IsNegative = false;
             BigInteger sumAdd = negativeThis.Add(negativeAnother);
             sumAdd.IsNegative = true;
             return sumAdd;
@@ -125,18 +112,21 @@ public class BigInteger
 
         int[] result = new int[firstNum.Length + 1];
 
-        for (int i = 0; i < firstNum.Length; i++)
+        for (var i = 0; i < firstNum.Length; i++)
         {
             result[i] = firstNum[i] + secondNum[i] + carry;
             carry = result[i] / 10;
             result[i] %= 10;
         }
 
-        result[^1] = carry;
-
+        if (carry != 0)
+        {
+            result[^1] = carry;
+        }
+        
         if (result[^1] == 0)
         {
-            int newLength = result.Length - 1;
+            var newLength = result.Length - 1;
             int[] newArray = new int[newLength];
 
             Array.Copy(result, newArray, newLength);
@@ -152,11 +142,11 @@ public class BigInteger
         var stringResult = String.Join("", result);
         BigInteger sum = new BigInteger(stringResult);
         sum.IsNegative = IsNegative;
-
+        
         return sum;
     }
-    
-    public BigInteger Sub(BigInteger another)
+
+    private BigInteger Sub(BigInteger another)
     {
         // return new BigInteger, result of current - another
 
@@ -169,9 +159,7 @@ public class BigInteger
             // If the current number is positive and the other number is negative,
             // perform addition instead of subtraction
             BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
-            negativeAnother.IsNegative = false;
-            BigInteger sum = Add(another);
-            sum.IsNegative = true;
+            BigInteger sum = Add(negativeAnother);
             return sum;
         }
         if (IsNegative && !another.IsNegative)
@@ -179,7 +167,6 @@ public class BigInteger
             // If the current number is negative and the other number is positive,
             // perform addition instead of subtraction
             BigInteger negativeThis = new BigInteger(ToStringNegative());
-            negativeThis.IsNegative = false;
             BigInteger sum = negativeThis.Add(another);
             sum.IsNegative = true;
             return sum;
@@ -188,9 +175,7 @@ public class BigInteger
         {
             // If both numbers are negative, perform subtraction as positive numbers
             BigInteger negativeThis = new BigInteger(ToStringNegative());
-            negativeThis.IsNegative = false;
             BigInteger negativeAnother = new BigInteger(another.ToStringNegative());
-            negativeAnother.IsNegative = false;
             return negativeAnother.Sub(negativeThis);
         }
 
@@ -222,9 +207,9 @@ public class BigInteger
             }
         }
 
-        int[] result = new int[firstNum.Length];
+        var result = new int[firstNum.Length];
 
-        for (int i = 0; i < firstNum.Length; i++)
+        for (var i = 0; i < firstNum.Length; i++)
         {
             result[i] = firstNum[i] - secondNum[i] - carry;
             carry = 0;
@@ -238,7 +223,7 @@ public class BigInteger
         Array.Reverse(result);
 
         // Remove leading zeros
-        int startIndex = 0;
+        var startIndex = 0;
         while (startIndex < result.Length - 1 && result[startIndex] == 0)
         {
             startIndex++;
@@ -255,9 +240,31 @@ public class BigInteger
     }
     
     
-    public BigInteger MultKaratsuba(BigInteger another)
+    private BigInteger MultKaratsuba(BigInteger another)
     {
-        // return new BigInteger, result of current * another
+        if (IsNegative && !another.IsNegative)
+        {
+            var negativeThis = new BigInteger(ToStringNegative());
+            var res = negativeThis * another;
+            res.IsNegative = true;
+            return res;
+        }
+        if (!IsNegative && another.IsNegative)
+        {
+            var negativeAnother = new BigInteger(another.ToStringNegative());
+            var res = MultKaratsuba(negativeAnother);
+            res.IsNegative = true;
+            return res;
+        }
+        if (IsNegative && another.IsNegative)
+        {
+            var negativeThis = new BigInteger(ToStringNegative());
+            var negativeAnother = new BigInteger(another.ToStringNegative());
+            var res = negativeThis * negativeAnother;
+            res.IsNegative = false;
+            return res;
+        }
+        
         int[] firstNum = _numbers; 
         int[] secondNum = another._numbers;
         var power = Math.Max(firstNum.Length, secondNum.Length) - 1; 
@@ -288,29 +295,6 @@ public class BigInteger
             }
             return res1;
         }
-            
-        // це треба для того, щоб якщо це число і є найменшим по довжині, то ми могли взяти його 1 елемент спокійно (далі буде більш зрозуміло)
-        // var carryX = 0;
-        // var carryY = 0;
-        // if (firstNum.Length - power == 0)
-        // {
-        //     carryX = 1;
-        // }
-        // if (secondNum.Length - power == 0)
-        // {
-        //     carryY = 1;
-        // }
-        
-        // var x1 = new int[firstNum.Length - power + carryX]; // отут як і казала, завжди буде елемент 
-        // var x2 = new int[power - carryX]; // відняти від степеня, бо інакше там будуть усі цифри навіть (з першим х1) ЯКЩО це знову ж таки найменше число по довжині
-        // var y1 = new int[secondNum.Length - power + carryY];
-        // var y2 = new int[power - carryY];
-        //
-        // Array.Copy(firstNum, power - carryX, x1, 0, firstNum.Length - power + carryX);
-        // Array.Copy(firstNum, 0, x2, 0, power - carryX);
-        // Array.Copy(secondNum, power - carryY, y1, 0, secondNum.Length - power + carryY);
-        // Array.Copy(secondNum, 0, y2, 0, power - carryY);
-        
         
         var x1 = new int[firstNum.Length - power ]; // отут як і казала, завжди буде елемент 
         var x2 = new int[power]; // відняти від степеня, бо інакше там будуть усі цифри навіть (з першим х1) ЯКЩО це знову ж таки найменше число по довжині
@@ -362,7 +346,7 @@ public class BigInteger
     public static BigInteger operator -(BigInteger a, BigInteger b) => a.Sub(b);
     public static BigInteger operator *(BigInteger a, BigInteger b) => a.MultKaratsuba(b);
     
-    public BigInteger KaratsubaVer2(BigInteger another)
+    private BigInteger KaratsubaVer2(BigInteger another)
     {
         int[] firstNum = _numbers; 
         int[] secondNum = another._numbers;
