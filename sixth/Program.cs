@@ -294,3 +294,56 @@ public class BigInteger
     public static BigInteger operator -(BigInteger a, BigInteger b) => a.Sub(b);
     public static BigInteger operator *(BigInteger a, BigInteger b) => a.KaratsubaMultiply(b);
 }
+
+/*
+static void QuickSort(int[] arr, int low, int high)
+{
+    // low - starting index,  high - ending index
+    if (low < high)
+    {
+        int pivotIndex = Partition(arr, low, high); // pivot index is the one we sort around
+        QuickSort(arr, low, pivotIndex - 1); // sorting before the index
+        QuickSort(arr, pivotIndex + 1, high); // sorting after the index
+    }
+}
+
+static int Partition(int[] arr, int low, int high) 
+{
+    // takes last element as pivot and places all the elements smaller than the pivot to its left
+    // and greater to its right
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++)
+    {
+        if (arr[j] < pivot)
+        {
+            i++;
+            Swap(arr, i, j);
+        }
+    }
+
+    Swap(arr, i + 1, high);
+    return i + 1;
+    
+}
+
+static void PrintArray(int[] arr)
+{
+    foreach (int element in arr)
+    {
+        Console.Write(element + " ");
+    }
+    Console.WriteLine();
+}
+
+static void Swap(int[] arr, int i, int j)
+{
+    (arr[i], arr[j]) = (arr[j], arr[i]);
+}
+
+int [] arr = {10, 80, 30, 90, 40, 50, 70};
+PrintArray(arr);
+QuickSort(arr, 0, arr.Length - 1);
+PrintArray(arr);
+*/
