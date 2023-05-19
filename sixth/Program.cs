@@ -1,4 +1,6 @@
-﻿static void QuickSort(int[] arr, int low, int high)
+﻿using System.Net.Mail;
+
+static void QuickSort(int[] arr, int low, int high)
 {
     // low - starting index,  high - ending index
     if (low < high)
@@ -92,10 +94,20 @@ public class BigInteger
             _numbers[value.Length - 1 - i] = int.Parse(value[i].ToString());
         }
     }
+
+    public BigInteger(int[] numbers, bool negative)
+    {
+        _numbers = numbers;
+        IsNegative = negative;
+    }
     
     public override string ToString()
     {
         // convert array back to string and return it
+        if (_numbers.Length == 0)
+        {
+            return "0";
+        }
         var str = new List<string>();
         for (var i = _numbers.Length - 1; i >= 0; i--)
         {
@@ -116,22 +128,22 @@ public class BigInteger
         {
             // If the current number is negative and the other number is positive,
             // perform subtraction instead of addition
-            var negativeThis = new BigInteger(ToString());
-            return another.Sub(negativeThis);
+            this.IsNegative = !this.IsNegative;
+            return another.Sub(this);
         }
         if (!IsNegative && another.IsNegative)
         {
             // If the current number is positive and the other number is negative,
             // perform subtraction instead of addition
-            var negativeAnother = new BigInteger(another.ToString());
-            return Sub(negativeAnother);
+            another.IsNegative = !another.IsNegative;
+            return Sub(another);
         }
         if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform addition and the result will be negative
-            var negativeThis = new BigInteger(ToString());
-            var negativeAnother = new BigInteger(another.ToString());
-            var sumAdd = negativeThis.Add(negativeAnother);
+            this.IsNegative = !this.IsNegative;
+            another.IsNegative = !another.IsNegative;
+            var sumAdd = this.Add(another);
             sumAdd.IsNegative = true;
             return sumAdd;
         }
@@ -195,25 +207,25 @@ public class BigInteger
         {
             // If the current number is positive and the other number is negative,
             // perform addition instead of subtraction
-            var negativeAnother = new BigInteger(another.ToString());
-            var sum = Add(negativeAnother);
+            another.IsNegative = !another.IsNegative;
+            var sum = Add(another);
             return sum;
         }
         if (IsNegative && !another.IsNegative)
         {
             // If the current number is negative and the other number is positive,
             // perform addition instead of subtraction
-            var negativeThis = new BigInteger(ToString());
-            var sum = negativeThis.Add(another);
+            this.IsNegative = !this.IsNegative;
+            var sum = another.Add(this);
             sum.IsNegative = true;
             return sum;
         }
         if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform subtraction as positive numbers
-            var negativeThis = new BigInteger(ToString());
-            var negativeAnother = new BigInteger(another.ToString());
-            return negativeAnother.Sub(negativeThis);
+            this.IsNegative = !this.IsNegative;
+            another.IsNegative = !another.IsNegative;
+            return another.Sub(this);
         }
 
         if (firstNum.Length < secondNum.Length)
@@ -283,22 +295,46 @@ public class BigInteger
 
         // Calculate the number of digits in the operands
         var n = Math.Max(_numbers.Length, another._numbers.Length);
-
+        
+        if (_numbers.Length < another._numbers.Length)
+        {
+            Array.Resize(ref _numbers, another._numbers.Length);
+        }
+        else if (another._numbers.Length < _numbers.Length)
+        {
+            Array.Resize(ref another._numbers, _numbers.Length);
+        }
+        
         // Base case: if the number of digits is less than a threshold, use regular multiplication
         // i.e  a specific condition where the number of digits in the operands is relatively small.
-        if (n < 10)
+        if (n < 2)
         {
-            var res = long.Parse(ToString()) * long.Parse(another.ToString());
+            var res = _numbers[0] * another._numbers[0];
             return new BigInteger(res.ToString());
         }
 
         // Split the numbers into high and low parts
         var m = n / 2;
+        
+        
 
-        var high1 = new BigInteger(ToString().Substring(0, Math.Max(0, ToString().Length - m)));
-        var low1 = new BigInteger(ToString().Substring(Math.Max(0, ToString().Length - m)));
-        var high2 = new BigInteger(another.ToString().Substring(0, Math.Max(0, another.ToString().Length - m)));
-        var low2 = new BigInteger(another.ToString().Substring(Math.Max(0, another.ToString().Length - m)));
+        // var high1 = new BigInteger(ToString().Substring(0, _numbers.Length - m));
+        //var h1 = new ArraySegment<int>( _numbers, 0, m );
+        var l1 = this._numbers[0..m];
+        var low1 = new BigInteger(l1, false);
+        
+        var h1 = this._numbers[m..];
+        var high1 = new BigInteger(h1, this.IsNegative);
+        
+        var l2 = another._numbers[0..m];
+        var low2 = new BigInteger(l2, false);
+        
+        var h2 = another._numbers[m..];
+        var high2 = new BigInteger(h2, another.IsNegative);
+        
+        // var low1 = new BigInteger(ToString().Substring(_numbers.Length - m));
+        // var high2 = new BigInteger(another.ToString().Substring(0, another._numbers.Length - m));
+        //var low2 = new BigInteger(another.ToString().Substring(another._numbers.Length - m));
 
         // Recursive steps
         var z0 = low1.KaratsubaMultiply(low2); // low1 * low2
