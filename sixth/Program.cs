@@ -1,4 +1,55 @@
-﻿while (true)
+﻿static void QuickSort(int[] arr, int low, int high)
+{
+    // low - starting index,  high - ending index
+    if (low < high)
+    {
+        int pivotIndex = Partition(arr, low, high); // pivot index is the one we sort around
+        QuickSort(arr, low, pivotIndex - 1); // sorting before the index
+        QuickSort(arr, pivotIndex + 1, high); // sorting after the index
+    }
+}
+
+static int Partition(int[] arr, int low, int high) 
+{
+    // takes last element as pivot and places all the elements smaller than the pivot to its left
+    // and greater to its right
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++)
+    {
+        if (arr[j] < pivot)
+        {
+            i++;
+            Swap(arr, i, j);
+        }
+    }
+
+    Swap(arr, i + 1, high);
+    return i + 1;
+    
+}
+
+static void PrintArray(int[] arr)
+{
+    foreach (int element in arr)
+    {
+        Console.Write(element + " ");
+    }
+    Console.WriteLine();
+}
+
+static void Swap(int[] arr, int i, int j)
+{
+    (arr[i], arr[j]) = (arr[j], arr[i]);
+}
+
+int [] arr = {20, 100, 15, 10, 80, 30, 90, 40, 50, 70};
+PrintArray(arr);
+QuickSort(arr, 0, arr.Length - 1);
+PrintArray(arr);
+
+while (true)
 {
     Console.WriteLine("Enter your example (with space):");
     var example = Console.ReadLine().Split(" ");
@@ -57,19 +108,7 @@ public class BigInteger
         }
         return numb;
     }
-    
-    private string ToStringNegative()
-    {
-        // convert array back to string and return it
-        var str = new List<string>();
-        for (var i = _numbers.Length - 2; i >= 0; i--)
-        {
-            str.Add(Convert.ToString(_numbers[i]));
-        }
-        var numb = string.Join("", str);
-        return numb;
-    }
-    
+
     private BigInteger Add(BigInteger another)
     {
         // return new BigInteger, result of current + another
@@ -77,21 +116,21 @@ public class BigInteger
         {
             // If the current number is negative and the other number is positive,
             // perform subtraction instead of addition
-            var negativeThis = new BigInteger(ToStringNegative());
+            var negativeThis = new BigInteger(ToString());
             return another.Sub(negativeThis);
         }
         if (!IsNegative && another.IsNegative)
         {
             // If the current number is positive and the other number is negative,
             // perform subtraction instead of addition
-            var negativeAnother = new BigInteger(another.ToStringNegative());
+            var negativeAnother = new BigInteger(another.ToString());
             return Sub(negativeAnother);
         }
         if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform addition and the result will be negative
-            var negativeThis = new BigInteger(ToStringNegative());
-            var negativeAnother = new BigInteger(another.ToStringNegative());
+            var negativeThis = new BigInteger(ToString());
+            var negativeAnother = new BigInteger(another.ToString());
             var sumAdd = negativeThis.Add(negativeAnother);
             sumAdd.IsNegative = true;
             return sumAdd;
@@ -156,7 +195,7 @@ public class BigInteger
         {
             // If the current number is positive and the other number is negative,
             // perform addition instead of subtraction
-            var negativeAnother = new BigInteger(another.ToStringNegative());
+            var negativeAnother = new BigInteger(another.ToString());
             var sum = Add(negativeAnother);
             return sum;
         }
@@ -164,7 +203,7 @@ public class BigInteger
         {
             // If the current number is negative and the other number is positive,
             // perform addition instead of subtraction
-            var negativeThis = new BigInteger(ToStringNegative());
+            var negativeThis = new BigInteger(ToString());
             var sum = negativeThis.Add(another);
             sum.IsNegative = true;
             return sum;
@@ -172,8 +211,8 @@ public class BigInteger
         if (IsNegative && another.IsNegative)
         {
             // If both numbers are negative, perform subtraction as positive numbers
-            var negativeThis = new BigInteger(ToStringNegative());
-            var negativeAnother = new BigInteger(another.ToStringNegative());
+            var negativeThis = new BigInteger(ToString());
+            var negativeAnother = new BigInteger(another.ToString());
             return negativeAnother.Sub(negativeThis);
         }
 
@@ -254,7 +293,7 @@ public class BigInteger
         }
 
         // Split the numbers into high and low parts
-        var m = (n + 1) / 2;
+        var m = n / 2;
 
         var high1 = new BigInteger(ToString().Substring(0, Math.Max(0, ToString().Length - m)));
         var low1 = new BigInteger(ToString().Substring(Math.Max(0, ToString().Length - m)));
